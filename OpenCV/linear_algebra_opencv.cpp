@@ -33,7 +33,7 @@ using namespace cv;
     vector * vector --> Matrix x
     matrix transpose x
     matrix inverse x
-    matrix * vector --> vector
+    matrix * vector --> vector x
     
     if these operations cannot be performed,
     choose a linear algebra library.
@@ -63,30 +63,32 @@ int main() {
 
     //1. vector transpose
     //NOTE! OpenCV considers A a 3 row x 1 col vector.
-    //lesson: OpenCV prints the vector out in the opposite format then it actually is!
-    Vec3f a(1.0f, 2.0f, 3.0f);       
+    Vec3f a(1.0f, 2.0f, 3.0f);       //seems 1x3, but is actually 3x1 when converted to matrix.
     Vec3f b(3.0f, 5.0f, 7.0f);
-    Mat A = Mat(a);                 //seems 1x3, but is actually 3x1.
+    Mat A = Mat(a);                 
     Mat B = Mat(b);
 
     std::cout << "vector (a): " << a << std::endl;
-    std::cout << "Matrix (A): " << std::endl << A << std::endl;
+    std::cout << "Vector (Mat A): " << std::endl << A << std::endl;
+    std::cout << "Matrix (A) RowsxCols: " << std::endl << A.rows << "x" << A.cols << std::endl;
+
     b[2] = 2.0f;
     std::cout << "vector (b): " << b << std::endl;
-    std::cout << "Matrix (B): " << std::endl << B << std::endl;
+    std::cout << "Vector (Mat B): " << std::endl << B << std::endl;
 
     transpose(B,B);
-    //B prints as a 3x1, but is actually 1x3
     std::cout << "Matrix (B) tranpose: " << B << std::endl;
+    std::cout << "Matrix (B) tranpose RowsxCols: " << std::endl << B.rows << "x" << B.cols << std::endl;
 
 
-    //2. vec*vec --> Scalar [B * A]
+    //Order and shape matter.
+    //2. vec*vec --> Scalar [B (1x3) * A (3*1)] = 1x1 Scalar
     Mat C;
     C = B*A;
     std::cout << "vec*vec --> Scalar (C): " << std::endl << C << std::endl;
 
 
-    //3: vector * vector --> Matrix [B (3x1) * A (1x3)]
+    //3: vector * vector --> Matrix [A (3x1) * B (1x3) ] = 3x3 Matrix
     Mat D;
     D = A*B;
     std::cout << "vec*vec --> Matrix (D): " << std::endl << D << std::endl;
@@ -108,15 +110,10 @@ int main() {
     std::cout << "Matrix (D) determinant: " << determinant(D) << std::endl;
 
 
-    //6. matrix*vec --> vector [D*a]    3x3 * 3x1 = 3 rows x 1 col?
+    //6. matrix*vec --> vector [D (3x3) * A (3x1) ] = 3x1 vector
     Mat E;
-    E = D*a;    //note! Matrix MUST go first
-    std::cout << "mat*vec --> Matrix (E): " << std::endl << E << std::endl;
-
-
-    //Mat F;
-    //F = D*B;    //note! Matrix MUST go first (the multiplication order matters! [this doesn't work])
-    //std::cout << "mat*vec --> Matrix (F): " << std::endl << F << std::endl;
+    E = D*A;
+    std::cout << "mat*vec --> Vector (E): " << std::endl << E << std::endl;
 
     return 0;
 }
